@@ -9,6 +9,7 @@ def generate(N, maxStatsValue,type):
 
     # Asignar valores aleatorios de la lista proporcionada a 'height'
     height_values = [1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0]
+    #height_values = range(130,201)
     equipment_data['height'] = np.random.choice(height_values, size=N)
     # Asignar valores aleatorios de la lista proporcionada a 'type'
     #equipment_data['type'] = np.random.choice(list(CharacterType), size=N)
@@ -20,6 +21,6 @@ def generate(N, maxStatsValue,type):
         personajes.append(personaje)
     equipment_data['performance'] = [personaje.performance for personaje in personajes]
 
-    poblacion_0 = equipment_data.sort_values(by='performance', ascending=True)
+    poblacion_0 = equipment_data.sort_values(by='performance', ascending=False)
 
     return poblacion_0
