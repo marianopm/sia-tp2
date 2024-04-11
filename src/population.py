@@ -1,9 +1,10 @@
 import numpy as np
+import pandas as pd
 
 from character import Character 
 from stats import random_stats
 
-def generate(N, maxStatsValue,type):
+def generate_init(N, maxStatsValue,type):
     
     equipment_data = random_stats(N, maxStatsValue)
 
@@ -22,5 +23,18 @@ def generate(N, maxStatsValue,type):
     equipment_data['performance'] = [personaje.performance for personaje in personajes]
 
     poblacion_0 = equipment_data.sort_values(by='performance', ascending=False)
+
+    return poblacion_0
+
+def eval_performace(generation,type):
+    data=pd.DataFrame(generation)
+    data['type'] = type
+    personajes = []
+    for index, row in data.iterrows():
+        personaje = Character(row['type'],row['height'],row['strength'],row['agility'],row['expertise'],row['resistance'],row['life'])
+        personajes.append(personaje)
+    data['performance'] = [personaje.performance for personaje in personajes]
+
+    poblacion_0 = data.sort_values(by='performance', ascending=False)
 
     return poblacion_0
