@@ -37,8 +37,8 @@ def random_stats(N, maxStatsValue):
             life.append(life_J)
         
 
-    equipmentIndex = list(range(0, N))
-    data = {'equipmentIndex': equipmentIndex,
+    #equipmentIndex = list(range(0, N))
+    data = {
             'strength': strength,
             'agility': agility,
             'expertise': expertise,
