@@ -17,6 +17,29 @@ def valid_offspring(cromosomas_decoded):
             valid += 1
     return valid, result_df
 
+def valid_chromosome(individuals):
+    df = pd.DataFrame(individuals)
+
+    # Convertir las columnas a números enteros
+    cols_to_sum = ['strength', 'agility', 'expertise', 'resistance', 'life']
+    df[cols_to_sum] = df[cols_to_sum].apply(lambda x: x.apply(lambda y: int(y, 2)))
+
+    # Calcular la suma de las columnas para cada fila
+    df['sum'] = df[cols_to_sum].sum(axis=1)
+
+    # Filtrar las filas donde la suma es igual a 150
+    filtered_df = df[df['sum'] == 150]
+
+    # Eliminar la columna 'sum'
+    filtered_df = filtered_df.drop(columns=['sum'])
+
+    # Convertir los valores de las columnas nuevamente a binario
+    cols_to_convert = cols_to_sum 
+    filtered_df[cols_to_convert] = filtered_df[cols_to_convert].map(lambda x: format(x, '08b' ))
+
+    # Mostrar el DataFrame resultante
+    return filtered_df
+
 def single_point_crossover(individuals):
     if len(individuals) % 2 != 0:
         raise ValueError("El número de individuos seleccionados debe ser par...")
