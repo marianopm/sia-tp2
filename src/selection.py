@@ -131,11 +131,60 @@ def boltzmann_selection(population, k, generation, T_0, T_offset, m):
 def universalSelection(population,k):
     pass
 
-def deterministicTournamentSelection(population,tournamentSize,k):
-    pass
+def deterministic_tournament_selection(population, tournament_size, k):
+    if k <= 0:
+        # Para casos incorrectos cuando se selecciona un número negativo para la selección de k-individuos:
+        raise ValueError('El valor de k debe ser mayor que el seleccionado...')
+    else:
+        individuals = pd.DataFrame(columns=population.columns)
+        individuals['performance'] = pd.Series(dtype=float)
+        
+        for _ in range(k):
+            # Selección aleatoria de [tournamentSize]-participantes:
+            participants_index = np.random.randint(0, len(population), size=tournament_size)
+            # DataFrame de participantes (para simplificar operaciones):
+            participants = population.iloc[participants_index]
+            # Orden descendente de los participantes:
+            winner_index = participants['performance'].idxmax()
+            winner = participants.loc[[winner_index]]
+            # Verificar si winner no está vacío antes de concatenar
+            if not winner.empty:
+                individuals = pd.concat([individuals, winner])
 
-def stochasticTournamentSelection(population,tournamentSize,k):
-    pass
+        individuals = individuals.reset_index(drop=True)
+
+    return individuals
+
+def stochastic_tournament_selection(population, k):
+    if k <= 0:
+        # Para casos incorrectos cuando se selecciona un número negativo para k-individuos selection:
+        raise ValueError('El valor de k debe ser mayor que el seleccionado...')
+    else:
+        individuals = []
+        threshold = np.random.uniform(0.5, 1)  # Paso 1: Se elige un valor de Threshold en [0.5 , 1]
+        while len(individuals) < k:
+            # Seleccionar un índice aleatorio
+            selected_index = np.random.randint(0, len(population))
+            ind = population.iloc[selected_index]
+
+            # Se toma un valor r al azar uniformemente en [0,1]
+            r = np.random.uniform(0, 1)
+
+            if r < threshold:
+                winner = ind
+            else:
+                # Seleccionar otro índice aleatorio diferente al anterior
+                previous_index = selected_index
+                while selected_index == previous_index:  # Aseguramos que los índices sean diferentes
+                    selected_index = np.random.randint(0, len(population))
+                ind = population.iloc[selected_index]
+                winner = ind
+
+            individuals.append(winner)
+
+    return pd.DataFrame(individuals)
+
+
 
 def rankBasedSelection(population,k):
     pass
