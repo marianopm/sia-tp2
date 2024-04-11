@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 
+"""
 def valid_offspring(cromosomas_decoded):
     df = pd.DataFrame(cromosomas_decoded)
     # Crear un DataFrame vacío para almacenar las filas que suman exactamente 150
@@ -16,6 +17,7 @@ def valid_offspring(cromosomas_decoded):
             result_df.loc[index] = row
             valid += 1
     return valid, result_df
+"""
 
 def valid_chromosome(individuals):
     df = pd.DataFrame(individuals)
