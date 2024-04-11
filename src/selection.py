@@ -51,6 +51,9 @@ def elitist_selection(population, elite_factor):
     return new_population
 
 def roulette_wheel_selection(population, k):
+    #population tiene que tener las columnas:
+    # performance_relative
+    # performance_accumulated
     """
     This function makes a selection of [k] individuals by applying the roulette-wheel
     method through an iterative code where a random number between 0 and 1 (uniformly
@@ -128,8 +131,48 @@ def boltzmann_selection(population, k, generation, T_0, T_offset, m):
         selected = roulette_wheel_selection(poblacion_rel_acu, k)
     return selected
 
-def universalSelection(population,k):
-    pass
+def universal_selection(population, k):
+    #population tiene que tener las columnas:
+    # performance_relative
+    # performance_accumulated
+    """
+    This function makes a selection of [k]-individuals by applying the universal
+    method through an iterative code that selects multiple individuals at once.
+    """
+
+    if k <= 0:
+        # For wrong cases when a negative number is selected for k-individuals selection:
+        raise ValueError('k value must be greater than zero...')
+    else:
+        randomNumber = np.random.uniform(0, 1)
+        individuals = {
+            'strength': [],
+            'agility': [],
+            'expertise': [],
+            'resistance': [],
+            'life': [],
+            'height': [],
+            'type': [],
+            'performance': [],
+            'performance_relative': [],
+            'performance_accumulated': []
+        }
+        for i in range(k):
+            # Selection reference:
+            reference = (randomNumber + i) / k
+            # Looking for values greater than previous reference:
+            found_values = np.where(
+                np.round(population['performance_accumulated'], 4) >= reference)[0]
+            # Getting the maximum within the found subset:
+            selected_index = found_values[0]
+            for key in individuals.keys():
+                individuals[key].append(population[key][selected_index])
+
+        # Create DataFrame from selected individuals
+        individuals_df = pd.DataFrame(individuals)
+
+        return individuals_df
+
 
 def deterministic_tournament_selection(population, tournament_size, k):
     if k <= 0:
@@ -186,5 +229,28 @@ def stochastic_tournament_selection(population, k):
 
 
 
-def rankBasedSelection(population,k):
-    pass
+def rank_based_selection(population, k):
+    """
+    This function makes a [k]-individuals selection by applying the rank-based
+    selection method through an iterative code.
+    """
+
+    if k <= 0:
+        # For wrong cases when a negative number is selected for k-individuals selection:
+        raise ValueError('k value must be greater than zero...')
+    else:
+        # Sort population in ascending order according to fitness values:
+        sorted_population = population.sort_values(by='performance', ascending=True)
+        # Ranking for sorted population:
+        ranking = np.arange(len(sorted_population), 0, -1)
+        # Pseudo-fitness function (exponential):
+        pseudo_fitness = np.exp(np.log(1 / len(ranking)) * ranking / (len(population) - 1))
+        # Add pseudo-fitness values to sorted population:
+        sorted_population['performance'] = pseudo_fitness
+        # Use roulette-wheel selection method:
+        sorted_population_rel_acu = add_relative_accumulate(sorted_population)
+        
+        print(sorted_population_rel_acu)
+        individuals = roulette_wheel_selection(sorted_population_rel_acu, k)
+        
+        return individuals
