@@ -45,12 +45,6 @@ def encode_genes(individuals):
 
     # Encoding heights:
     height = individuals['height'].apply( height_to_bin) 
-    # No encondig
-    type	 = individuals['type']
-    performance	 = individuals['performance']
-    performance_relative = individuals['performance_relative']	
-    performance_accumulated = individuals['performance_accumulated']
-
 
     # Arranging variables into a DataFrame:
     chromosomes = pd.DataFrame({
@@ -59,11 +53,7 @@ def encode_genes(individuals):
         'expertise': expertise,
         'resistance': resistance,
         'life': life,
-        'height': height,
-        'type': type,
-        'performance': performance,
-        'performance_relative': performance_relative,
-        'performance_accumulated': performance_accumulated
+        'height': height
     })
 
     chromosomes.index = [str(i) for i in range(1, len(chromosomes) + 1)]
@@ -88,12 +78,6 @@ def decode_genes(individuals):
     # Encoding heights:
     height = individuals['height'].apply(height_to_dec)
 
-    # No encondig
-    type	 = individuals['type']
-    performance	 = individuals['performance']
-    performance_relative = individuals['performance_relative']	
-    performance_accumulated = individuals['performance_accumulated']
-
     # Arranging variables into a DataFrame:
     chromosomes = pd.DataFrame({
         'strength': strength,
@@ -102,11 +86,7 @@ def decode_genes(individuals):
         'resistance': resistance,
         'life': life,
         'height': height,
-        'height': height,
-        'type': type,
-        'performance': performance,
-        'performance_relative': performance_relative,
-        'performance_accumulated': performance_accumulated
+        'height': height
     })
 
     chromosomes.index = [str(i) for i in range(1, len(chromosomes) + 1)]

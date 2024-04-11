@@ -23,25 +23,64 @@ def single_point_crossover(individuals):
     else:
         # Crear un DataFrame para los cromosomas
         chromosomes = pd.DataFrame(individuals)
-
+        columns_to_crossover = chromosomes.columns
         new_chromosomes = []
 
         for i in range(0, len(chromosomes), 2):
-            crossover_point = np.random.randint(0, len(chromosomes.columns))
+            # Seleccionar un punto de cruce aleatorio para cada columna
+            crossover_points = {col: np.random.randint(0, 8 if col != 'height' else 3) for col in columns_to_crossover}
 
-            if crossover_point == 0:
-                # Uno de los hijos toma todos los genes del padre y el otro hijo toma
-                # el genotipo completo de la madre.
-                offspring_1 = chromosomes.iloc[i]
-                offspring_2 = chromosomes.iloc[i+1]
-            else:
-                # Se ejecuta el cruce de un solo punto
-                offspring_1 = pd.concat([chromosomes.iloc[i][:crossover_point], chromosomes.iloc[i+1][crossover_point:]])
-                offspring_2 = pd.concat([chromosomes.iloc[i+1][:crossover_point], chromosomes.iloc[i][crossover_point:]])
+            offspring_1 = chromosomes.iloc[i].copy()
+            offspring_2 = chromosomes.iloc[i+1].copy()
 
-            new_chromosomes.append(offspring_1)
-            new_chromosomes.append(offspring_2)
+            for col, point in crossover_points.items():
+                # Intercambiar los bits de cada columna en el punto de cruce
+                offspring_1[col] = chromosomes.iloc[i][col][:point] + chromosomes.iloc[i+1][col][point:]
+                offspring_2[col] = chromosomes.iloc[i+1][col][:point] + chromosomes.iloc[i][col][point:]
 
+            new_chromosomes.extend([offspring_1, offspring_2])
+        """
+        # Mantener las columnas no afectadas
+        unchanged_columns = [col for col in chromosomes.columns if col not in columns_to_crossover]
+        for col in unchanged_columns:
+            new_chromosomes[0][col] = chromosomes.iloc[0][col]
+            new_chromosomes[1][col] = chromosomes.iloc[1][col]
+        """
+        # Concatenar los nuevos cromosomas y reiniciar los índices
+        chromosomes = pd.DataFrame(new_chromosomes)
+        chromosomes.reset_index(drop=True, inplace=True)
+
+        return chromosomes
+
+def two_point_crossover(individuals):
+    if len(individuals) % 2 != 0:
+        raise ValueError("El número de individuos seleccionados debe ser par...")
+    else:
+        # Crear un DataFrame para los cromosomas
+        chromosomes = pd.DataFrame(individuals)
+        columns_to_crossover = chromosomes.columns
+        new_chromosomes = []
+
+        for i in range(0, len(chromosomes), 2):
+            # Seleccionar dos puntos de cruce aleatorios para cada columna
+            crossover_points = {col: np.sort(np.random.randint(0, 8 if col != 'height' else 3, size=2)) for col in columns_to_crossover}
+
+            offspring_1 = chromosomes.iloc[i].copy()
+            offspring_2 = chromosomes.iloc[i+1].copy()
+
+            for col, points in crossover_points.items():
+                # Intercambiar los bits de cada columna entre los puntos de cruce
+                offspring_1[col] = chromosomes.iloc[i][col][:points[0]] + chromosomes.iloc[i+1][col][points[0]:points[1]] + chromosomes.iloc[i][col][points[1]:]
+                offspring_2[col] = chromosomes.iloc[i+1][col][:points[0]] + chromosomes.iloc[i][col][points[0]:points[1]] + chromosomes.iloc[i+1][col][points[1]:]
+
+            new_chromosomes.extend([offspring_1, offspring_2])
+        """
+        # Mantener las columnas no afectadas
+        unchanged_columns = [col for col in chromosomes.columns if col not in columns_to_crossover]
+        for col in unchanged_columns:
+            new_chromosomes[0][col] = chromosomes.iloc[0][col]
+            new_chromosomes[1][col] = chromosomes.iloc[1][col]
+        """
         # Concatenar los nuevos cromosomas y reiniciar los índices
         chromosomes = pd.DataFrame(new_chromosomes)
         chromosomes.reset_index(drop=True, inplace=True)
