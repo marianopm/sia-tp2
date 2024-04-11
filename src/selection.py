@@ -128,3 +128,14 @@ def boltzmann_selection(population, k, generation, T_0, T_offset, m):
         selected = roulette_wheel_selection(poblacion_rel_acu, k)
     return selected
 
+def universalSelection(population,k):
+    pass
+
+def deterministicTournamentSelection(population,tournamentSize,k):
+    pass
+
+def stochasticTournamentSelection(population,tournamentSize,k):
+    pass
+
+def rankBasedSelection(population,k):
+    pass

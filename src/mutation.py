@@ -42,3 +42,9 @@ def one_gene_mutation(individuals, mutation_rate):
                     mutated_gene += bit
             chromosomes.iloc[i, gene_index] = mutated_gene  # Adding mutation to the offspring.
     return chromosomes
+
+def multiGeneMutation(individuals,mutationRate):
+    pass
+
+def uniformMultiGeneMutation(individuals,mutationRate):
+    pass

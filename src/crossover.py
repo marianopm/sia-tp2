@@ -18,7 +18,7 @@ def valid_offspring(cromosomas_decoded):
             valid += 1
     return valid, result_df
 """
-
+#funcion auxiliar
 def valid_chromosome(individuals):
     df = pd.DataFrame(individuals)
 
@@ -111,3 +111,9 @@ def two_point_crossover(individuals):
         chromosomes.reset_index(drop=True, inplace=True)
 
         return chromosomes
+    
+def uniformCrossover(individuals,M):
+    pass
+
+def annularCrossover(individuals,M):
+    pass
