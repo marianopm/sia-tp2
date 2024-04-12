@@ -45,6 +45,7 @@ def multi_gene_mutation(individuals, mutation_rate):
                             gene[j] = '1' if gene[j] == '0' else '0'  # Cambiar el bit
                     chromosomes.loc[i, col] = ''.join(gene)  # Convertir la lista de bits nuevamente a cadena binaria
         return chromosomes
+    
 #Mutación Multigen Uniforeme
 def multi_gene_mutation_uniform(individuals, mutation_rate):
     """

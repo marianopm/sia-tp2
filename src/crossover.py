@@ -112,8 +112,62 @@ def two_point_crossover(individuals):
 
         return chromosomes
     
-def uniformCrossover(individuals,M):
-    pass
+def uniform_crossover(individuals):
+    # Verificar que el número de individuos seleccionados sea par
+    if len(individuals) % 2 != 0:
+        raise ValueError('El número de individuos seleccionados debe ser par...')
+    else:
+        # Crear un DataFrame para almacenar los cromosomas
+        individuals.reset_index(drop=True, inplace=True)
+        chromosomes = pd.DataFrame(individuals)
 
-def annularCrossover(individuals,M):
-    pass
+        # Inicializar DataFrame para almacenar los descendientes
+        offspring = pd.DataFrame(columns=chromosomes.columns)
+
+        # Iterar sobre pares de individuos
+        for i in range(0, len(chromosomes), 2):
+            # Iterar sobre las columnas
+            for col in chromosomes.columns:
+                # Crear la columna si no existe en el DataFrame offspring
+                if col not in offspring.columns:
+                    offspring[col] = ''
+
+                # Probabilidad de crossover
+                crossover_probability = np.random.uniform(0, 1)
+
+                # Si la probabilidad es menor que 0.5, intercambiar los bits
+                if crossover_probability < 0.5:
+                    offspring.at[i, col] = chromosomes.at[i, col]
+                else:
+                    offspring.at[i, col] = chromosomes.at[i + 1, col]
+
+        # Reiniciar los índices de los descendientes
+        offspring.reset_index(drop=True, inplace=True)
+
+    return offspring
+
+
+def annular_crossover(individuals):
+    if len(individuals) % 2 != 0:
+        raise ValueError('El número de individuos seleccionados debe ser par...')
+    else:
+        chromosomes = pd.DataFrame(individuals)
+        offspring = pd.DataFrame(columns=chromosomes.columns)
+
+        for i in range(0, len(chromosomes), 2):
+            crossover_point = np.random.randint(0, len(chromosomes.columns))
+            crossover_length = crossover_point // 2
+
+            if crossover_point == 0:
+                offspring_1 = chromosomes.iloc[i]
+                offspring_2 = chromosomes.iloc[i + 1]
+            elif crossover_point == crossover_length:
+                offspring_1 = pd.concat([chromosomes.iloc[i, :crossover_point], chromosomes.iloc[i + 1, crossover_point:]], axis=0)
+                offspring_2 = pd.concat([chromosomes.iloc[i + 1, :crossover_point], chromosomes.iloc[i, crossover_point:]], axis=0)
+            else:
+                offspring_1 = pd.concat([chromosomes.iloc[i, :crossover_length], chromosomes.iloc[i + 1, crossover_length:crossover_point], chromosomes.iloc[i, crossover_point:]], axis=0)
+                offspring_2 = pd.concat([chromosomes.iloc[i + 1, :crossover_length], chromosomes.iloc[i, crossover_length:crossover_point], chromosomes.iloc[i + 1, crossover_point:]], axis=0)
+
+            offspring = pd.concat([offspring, offspring_1.to_frame().T, offspring_2.to_frame().T], ignore_index=True)
+
+    return offspring
