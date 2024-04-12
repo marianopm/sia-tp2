@@ -20,7 +20,7 @@ class CharacterType(Enum):
 class Character():
     def __init__(self, type, height, strength_i, agility_i, expertise_i, resistance_i, life_i):
         self.type = type
-        self.height = height                               # Specify Character's height.
+        self.height = height                                # Specify Character's height.
         self.strength = 100 * math.tanh(strength_i/100)     # Specify Character's strength.
         self.agility = math.tanh(agility_i/100)             # Specify Character's agility.
         self.expertise = 6 * math.tanh(expertise_i/100)     # Specify Character's expertise.

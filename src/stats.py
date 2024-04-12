@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-def random_stats(N, maxStatsValue):
+def random_stats(populationNumber, maxStatsValue):
     """
     This function creates a DataFrame with N possible equipments arranged
     through uniform random stats for each one (by considering sum(stats) = 150),
@@ -21,7 +21,7 @@ def random_stats(N, maxStatsValue):
 
     # Other selections (0 to N-1):
     i = 0
-    while i < N:
+    while i < populationNumber:
         strength_j = (int(np.round(np.random.uniform(1, maxStatsValue))))
         agility_j = (int(np.round(np.random.uniform(1, maxStatsValue))))
         expertise_J = (int(np.round(np.random.uniform(1, maxStatsValue))))
