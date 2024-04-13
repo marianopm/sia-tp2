@@ -32,19 +32,7 @@ def normalize_chromosome(individuals):
     decode_cromosomas = decode_genes(cromosomas_to_norm)
     
     columns_to_adjust = ['strength', 'agility', 'expertise', 'resistance', 'life']
-    """
-    # Calcular la suma de las columnas para cada fila
-    # Suma de valores en cada fila y añadir un pequeño valor para evitar la división por cero
-    decode_cromosomas['sum'] = decode_cromosomas[columns_to_adjust].sum(axis=1)
-
-    # Multiplicar cada valor por 150
-    decode_cromosomas[columns_to_adjust] *= 150
-
-    # Dividir por la columna 'sum'
-    decode_cromosomas[columns_to_adjust] /= decode_cromosomas['sum'].values[:, None]
-    # Eliminar la columna 'sum'
-    decode_cromosomas = decode_cromosomas.drop(columns=['sum'])
-    """
+  
     # Calcular el factor de escala para que la suma sea 150 en cada fila
     decode_cromosomas['scale_factor'] = 150 / decode_cromosomas[columns_to_adjust].sum(axis=1)
 
@@ -158,7 +146,7 @@ def uniform_crossover(individuals):
                 else:
                     offspring.at[i, col] = chromosomes.at[i + 1, col]
 
-<<<<<<< Updated upstream
+
         # Reiniciar los índices de los descendientes
         offspring.reset_index(drop=True, inplace=True)
 
