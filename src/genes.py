@@ -27,21 +27,22 @@ def height_to_dec(valor):
     valor_str = str(valor).zfill(3)
     return switch.get(valor_str,'no valido!')
 
-def encode_genes(individuals):
+def encode_genes(individuals_orig):
+    individuals = individuals_orig.copy()
     # Encoding strengths:
-    strength = individuals['strength'].apply(lambda x: format(x, '08b'))
+    strength = individuals['strength'].apply(lambda x: format(int(x), '08b'))
 
     # Encoding agilities:
-    agility = individuals['agility'].apply(lambda x: format(x, '08b'))
+    agility = individuals['agility'].apply(lambda x: format(int(x), '08b'))
 
     # Encoding expertises:
-    expertise = individuals['expertise'].apply(lambda x: format(x, '08b'))
+    expertise = individuals['expertise'].apply(lambda x: format(int(x), '08b'))
 
     # Encoding resistances:
-    resistance = individuals['resistance'].apply(lambda x: format(x, '08b'))
+    resistance = individuals['resistance'].apply(lambda x: format(int(x), '08b'))
 
     # Encoding lifes:
-    life = individuals['life'].apply(lambda x: format(x, '08b'))
+    life = individuals['life'].apply(lambda x: format(int(x), '08b'))
 
     # Encoding heights:
     height = individuals['height'].apply( height_to_bin) 
@@ -60,20 +61,22 @@ def encode_genes(individuals):
 
     return chromosomes
 
-def decode_genes(individuals):
+def decode_genes(individuals_orig):
+    individuals = individuals_orig.copy()
     # Encoding strengths:
-    strength = individuals['strength'].apply(lambda x: int(x,2))
+    strength = individuals['strength'].apply(lambda x: float(int(x,2)))
+    
     # Encoding agilities:
-    agility = individuals['agility'].apply(lambda x: int(x,2))
+    agility = individuals['agility'].apply(lambda x: float(int(x,2)))
 
     # Encoding expertises:
-    expertise = individuals['expertise'].apply(lambda x: int(x,2))
+    expertise = individuals['expertise'].apply(lambda x: float(int(x,2)))
 
     # Encoding resistances:
-    resistance = individuals['resistance'].apply(lambda x: int(x,2))
+    resistance = individuals['resistance'].apply(lambda x: float(int(x,2)))
 
     # Encoding lifes:
-    life = individuals['life'].apply(lambda x: int(x,2))
+    life = individuals['life'].apply(lambda x: float(int(x,2)))
 
     # Encoding heights:
     height = individuals['height'].apply(height_to_dec)

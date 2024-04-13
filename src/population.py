@@ -23,7 +23,7 @@ def generate_init(N, maxStatsValue,type):
     equipment_data['performance'] = [personaje.performance for personaje in personajes]
 
     poblacion_0 = equipment_data.sort_values(by='performance', ascending=False)
-
+    #print(poblacion_0)
     return poblacion_0
 
 def eval_performace(generation,type):

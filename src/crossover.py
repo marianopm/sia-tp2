@@ -1,23 +1,7 @@
 import numpy as np
 import pandas as pd
+from genes import encode_genes, decode_genes
 
-"""
-def valid_offspring(cromosomas_decoded):
-    df = pd.DataFrame(cromosomas_decoded)
-    # Crear un DataFrame vacío para almacenar las filas que suman exactamente 150
-    result_df = pd.DataFrame(columns=df.columns)
-    valid = 0
-    # Recorrer todas las filas
-    for index, row in df.iterrows():
-        # Calcular la suma de las columnas 'strength', 'agility', 'expertise', 'resistance' y 'life'
-        sum_values = row[['strength', 'agility', 'expertise', 'resistance', 'life']].sum()
-        # Verificar si la suma es exactamente 150
-        if sum_values == 150:
-            # Agregar la fila al nuevo DataFrame usando loc
-            result_df.loc[index] = row
-            valid += 1
-    return valid, result_df
-"""
 #funcion auxiliar
 def valid_chromosome(individuals):
     df = pd.DataFrame(individuals)
@@ -41,6 +25,39 @@ def valid_chromosome(individuals):
 
     # Mostrar el DataFrame resultante
     return filtered_df
+
+#funcion auxiliar
+def normalize_chromosome(individuals):
+    cromosomas_to_norm = individuals.copy()
+    decode_cromosomas = decode_genes(cromosomas_to_norm)
+    
+    columns_to_adjust = ['strength', 'agility', 'expertise', 'resistance', 'life']
+    """
+    # Calcular la suma de las columnas para cada fila
+    # Suma de valores en cada fila y añadir un pequeño valor para evitar la división por cero
+    decode_cromosomas['sum'] = decode_cromosomas[columns_to_adjust].sum(axis=1)
+
+    # Multiplicar cada valor por 150
+    decode_cromosomas[columns_to_adjust] *= 150
+
+    # Dividir por la columna 'sum'
+    decode_cromosomas[columns_to_adjust] /= decode_cromosomas['sum'].values[:, None]
+    # Eliminar la columna 'sum'
+    decode_cromosomas = decode_cromosomas.drop(columns=['sum'])
+    """
+    # Calcular el factor de escala para que la suma sea 150 en cada fila
+    decode_cromosomas['scale_factor'] = 150 / decode_cromosomas[columns_to_adjust].sum(axis=1)
+
+    # Ajustar las columnas proporcionalmente
+    decode_cromosomas[columns_to_adjust] *= decode_cromosomas['scale_factor'].values[:, None]
+
+    # Eliminar la columna 'scale_factor'
+    decode_cromosomas.drop(columns=['scale_factor'], inplace=True)
+
+    encode_cromosomas = encode_genes(decode_cromosomas)
+    # Mostrar el DataFrame resultante
+    return encode_cromosomas
+
 
 def single_point_crossover(individuals):
     if len(individuals) % 2 != 0:
