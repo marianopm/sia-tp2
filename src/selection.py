@@ -134,7 +134,7 @@ def boltzmann_selection(population, k, generation, T_0, T_offset, m):
         # Temperature equation in function of the generation instant:
         T = T_offset + (T_0 - T_offset) * np.exp(-m * generation)
         # Pseudo-fitness function (along temperature):
-        popu = population.loc[:, ['strength','agility','expertise','resistance','life','height','type','performance']]
+        popu = population.loc[:, ['strength','agility','expertise','resistance','life','height','characterType','performance']]
         popu['performance'] = np.exp(popu['performance'] / T) / np.sum(np.exp(popu['performance'] / T))
         
         poblacion_rel_acu = add_relative_accumulate(popu)
