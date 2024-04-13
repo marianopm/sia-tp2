@@ -158,6 +158,7 @@ def uniform_crossover(individuals):
                 else:
                     offspring.at[i, col] = chromosomes.at[i + 1, col]
 
+<<<<<<< Updated upstream
         # Reiniciar los índices de los descendientes
         offspring.reset_index(drop=True, inplace=True)
 

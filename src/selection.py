@@ -4,9 +4,9 @@ import pandas as pd
 import numpy as np
 
 #funcion auxiliar
-def add_relative_accumulate(population):
+def add_relative_accumulate(initialPopulation):
     # Crear una copia del DataFrame original para evitar modificar el DataFrame original
-    population2 = population.copy()
+    population2 = initialPopulation.copy()
     
     # Calcular el performance relativo
     sum_performance = population2['performance'].sum()
@@ -72,7 +72,7 @@ def roulette_wheel_selection(population, k):
             'resistance': [],
             'life': [],
             'height': [],
-            'type': [],
+            'characterType': [],
             'performance': [],
             'performance_relative': [],
             'performance_accumulated': []
@@ -152,7 +152,7 @@ def universal_selection(population, k):
             'resistance': [],
             'life': [],
             'height': [],
-            'type': [],
+            'characterType': [],
             'performance': [],
             'performance_relative': [],
             'performance_accumulated': []
