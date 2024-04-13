@@ -97,6 +97,19 @@ def roulette_wheel_selection(population, k):
     
 def boltzmann_selection(population, k, generation, T_0, T_offset, m):
     """
+    Boltzmann recibi estos parametros:
+        max_generation = 1000                   # Es la cantidad maximas de generaciones que vamos a generar
+                                                # Ya esta establecido como parametro del motor AG
+        generation = 1                          # Va a variar, corresponde al numero de generacion en la que se esta.    
+        k = K                                   # Numero de individuos seleccionados
+                                                # Se establecio al inicio del motor AG            
+        T_0 = 20                                # Initial temperature.
+        T_offset = 0.5                          # Offset value for temperature exponential function.
+        reference_generation = max_generation   # Se calcula: 
+                                                #Reference generation where 0 < (T_0 - T_offset) = 0.015 = deltaT is desired.
+        deltaT = 0.015                          # 0 < (T_0 - T_offset) = deltaT at reference generation.
+        m = - (np.log(deltaT) - np.log(T_0 - T_offset)) / reference_generation      # Se calcula
+
     This function makes a [k]-individuals selection by applying the
     Boltzmann selection method through an iterative code that draws inspiration
     from physics, particularly from statistical mechanics and the concept of
