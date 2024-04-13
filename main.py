@@ -58,3 +58,16 @@ def read_config(filename):
 
 if __name__ == "__main__":
     main()
+
+## ideas (esto es para vos, luego borra esto)
+""" 
+Por cada nueve generacion, se podria ir almacenado el individuo de maximo performance
+ en un dataframe asi:
+
+Generation strength	agility	expertise	resistance	life	height	type	                performance     m_sel1  m_sel2  m_cruce    m_mutation m_repl1  M_repl2	    
+0	       72	    7	    60	        8	        3	    1.80	CharacterType.ARCHER	1.10397257e+03	roulete rank    oneponit   onegene    rank     tourn
+1	       58	    4	    62	        11	        15	    1.80	CharacterType.ARCHER	9.54910635e+02	elite   tourn   multipoint multigen   roulete  elite
+
+guardarlo en .csv
+y con eso podriamos construir interesantes graficos, creo jeje
+"""
