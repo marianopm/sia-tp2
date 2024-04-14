@@ -18,8 +18,8 @@ class CharacterType(Enum):
         
 """
 class Character():
-    def __init__(self, type, height, strength_i, agility_i, expertise_i, resistance_i, life_i):
-        self.type = type
+    def __init__(self, characterType, height, strength_i, agility_i, expertise_i, resistance_i, life_i):
+        self.characterType = characterType
         self.height = height                                # Specify Character's height.
         self.strength = 100 * math.tanh(strength_i/100)     # Specify Character's strength.
         self.agility = math.tanh(agility_i/100)             # Specify Character's agility.
@@ -50,11 +50,11 @@ class Character():
         attack = self.attack_aptitude
         defense = self.defense_aptitude
         # Performance (objective function):
-        if self.type == CharacterType.WARRIOR:
+        if self.characterType == CharacterType.WARRIOR:
             return  0.6 * attack + 0.4 * defense
-        elif self.type == CharacterType.ARCHER:
+        elif self.characterType == CharacterType.ARCHER:
             return  0.9 * attack + 0.1 * defense
-        elif self.type == CharacterType.DEFENDER:
+        elif self.characterType == CharacterType.DEFENDER:
             return  0.1 * attack + 0.9 * defense
-        elif self.type == CharacterType.INFILTRATOR:
+        elif self.characterType == CharacterType.INFILTRATOR:
             return  0.8 * attack + 0.3 * defense
