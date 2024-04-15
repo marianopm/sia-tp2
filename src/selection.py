@@ -30,7 +30,7 @@ def elitist_selection(population, elite_factor):
     # Ordenar la población según el rendimiento
     #sorted_population = sorted(population, key=lambda x: x['performance'], reverse=True)
     sorted_population = population.sort_values(by='performance', ascending=False)
-
+    
     # Seleccionar los mejores individuos como élite
     elite = sorted_population[:k]
 
@@ -95,21 +95,8 @@ def roulette_wheel_selection(population, k):
 
         return selected_df
     
-def boltzmann_selection(population, k, generation, T_0, T_offset, m):
+def boltzmann_selection(population, k, generation, T_0, T_c, m):
     """
-    Boltzmann recibi estos parametros:
-        max_generation = 1000                   # Es la cantidad maximas de generaciones que vamos a generar
-                                                # Ya esta establecido como parametro del motor AG
-        generation = 1                          # Va a variar, corresponde al numero de generacion en la que se esta.    
-        k = K                                   # Numero de individuos seleccionados
-                                                # Se establecio al inicio del motor AG            
-        T_0 = 20                                # Initial temperature.
-        T_offset = 0.5                          # Offset value for temperature exponential function.
-        reference_generation = max_generation   # Se calcula: 
-                                                #Reference generation where 0 < (T_0 - T_offset) = 0.015 = deltaT is desired.
-        deltaT = 0.015                          # 0 < (T_0 - T_offset) = deltaT at reference generation.
-        m = - (np.log(deltaT) - np.log(T_0 - T_offset)) / reference_generation      # Se calcula
-
     This function makes a [k]-individuals selection by applying the
     Boltzmann selection method through an iterative code that draws inspiration
     from physics, particularly from statistical mechanics and the concept of
@@ -132,10 +119,11 @@ def boltzmann_selection(population, k, generation, T_0, T_offset, m):
         raise ValueError('k value must be greater than selected one...')
     else:
         # Temperature equation in function of the generation instant:
-        T = T_offset + (T_0 - T_offset) * np.exp(-m * generation)
+        T = T_c + (T_0 - T_c) * np.exp(-m * generation)
         # Pseudo-fitness function (along temperature):
         popu = population.loc[:, ['strength','agility','expertise','resistance','life','height','characterType','performance']]
-        popu['performance'] = np.exp(popu['performance'] / T) / np.sum(np.exp(popu['performance'] / T))
+        # Culculate ExpVal and save in 'perfomance' 
+        popu['performance'] = np.exp(popu['performance'] / T) / ( (np.sum(np.exp(popu['performance'] / T))) /len(popu))
         
         poblacion_rel_acu = add_relative_accumulate(popu)
         
@@ -211,30 +199,37 @@ def deterministic_tournament_selection(population, tournament_size, k):
 
     return individuals
 
-def stochastic_tournament_selection(population, k):
+def stochastic_tournament_selection(population, k,threshold):
+    #El valor de threshold tiene que ser: random.uniform(0.5, 1)
     if k <= 0:
         # Para casos incorrectos cuando se selecciona un número negativo para k-individuos selection:
         raise ValueError('El valor de k debe ser mayor que el seleccionado...')
     else:
         individuals = []
-        threshold = np.random.uniform(0.5, 1)  # Paso 1: Se elige un valor de Threshold en [0.5 , 1]
+        #threshold = np.random.uniform(0.5, 1)  # Paso 1: Se elige un valor de Threshold en [0.5 , 1]
         while len(individuals) < k:
             # Seleccionar un índice aleatorio
-            selected_index = np.random.randint(0, len(population))
-            ind = population.iloc[selected_index]
+            selected_index1 = np.random.randint(0, len(population))
+            #print(f'elegido 1: {selected_index1}')
+            selected_index2 = np.random.randint(0, len(population))
+            #print(f'elegido 2: {selected_index2}')
+            individuo1 = population.iloc[selected_index1]
+            individuo2 = population.iloc[selected_index2]
 
+            if individuo1['performance'] >= individuo2['performance']:
+                apto = individuo1
+                noapto = individuo2
+            else:
+                apto = individuo2
+                noapto = individuo1
+                
             # Se toma un valor r al azar uniformemente en [0,1]
             r = np.random.uniform(0, 1)
 
             if r < threshold:
-                winner = ind
+                winner = apto
             else:
-                # Seleccionar otro índice aleatorio diferente al anterior
-                previous_index = selected_index
-                while selected_index == previous_index:  # Aseguramos que los índices sean diferentes
-                    selected_index = np.random.randint(0, len(population))
-                ind = population.iloc[selected_index]
-                winner = ind
+                winner = noapto
 
             individuals.append(winner)
 
@@ -255,15 +250,18 @@ def rank_based_selection(population, k):
         # Sort population in ascending order according to fitness values:
         sorted_population = population.sort_values(by='performance', ascending=True)
         # Ranking for sorted population:
-        ranking = np.arange(len(sorted_population), 0, -1)
+        sorted_population['ranking'] = range(1,len(sorted_population)+1,)
         # Pseudo-fitness function (exponential):
-        pseudo_fitness = np.exp(np.log(1 / len(ranking)) * ranking / (len(population) - 1))
+        #pseudo_fitness = np.exp(np.log(1 / len(ranking)) * ranking / (len(population) - 1))
         # Add pseudo-fitness values to sorted population:
-        sorted_population['performance'] = pseudo_fitness
+        sorted_population['performance'] = (len(population)- sorted_population['ranking']) / len(population)
+        #print(sorted_population)
+        sorted_population.drop(columns=['ranking'], inplace=True)
+
         # Use roulette-wheel selection method:
         sorted_population_rel_acu = add_relative_accumulate(sorted_population)
         
-        print(sorted_population_rel_acu)
+        #print(sorted_population_rel_acu)
         individuals = roulette_wheel_selection(sorted_population_rel_acu, k)
         
         return individuals

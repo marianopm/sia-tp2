@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from genes import encode_genes, decode_genes
 
+"""
 #funcion auxiliar
 def valid_chromosome(individuals):
     df = pd.DataFrame(individuals)
@@ -25,6 +26,7 @@ def valid_chromosome(individuals):
 
     # Mostrar el DataFrame resultante
     return filtered_df
+"""
 
 #funcion auxiliar
 def normalize_chromosome(individuals):

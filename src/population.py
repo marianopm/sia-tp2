@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
 
-from .character import Character 
-from .stats import random_stats
+from character import Character 
+from stats import random_stats
 
 def generate_init_population(populationNumber, maxStatsValue,characterType):
     
