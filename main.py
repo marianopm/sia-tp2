@@ -5,11 +5,10 @@ from src.character import CharacterType
 from src.stats import random_stats
 from src.selection import stochastic_tournament_selection, deterministic_tournament_selection, add_relative_accumulate, elitist_selection, roulette_wheel_selection, universal_selection, boltzmann_selection
 from src.genes import  encode_genes, decode_genes
-from src.crossover import single_point_crossover, valid_chromosome, two_point_crossover
+from src.crossover import single_point_crossover, valid_chromosome, two_point_crossover, uniform_crossover, annular_crossover
 from src.mutation import one_gene_mutation, multi_gene_mutation, multi_gene_mutation_uniform
 import numpy as np
 import pandas as pd
-import os
 
 def main():
     print("TP2")
@@ -26,8 +25,8 @@ def main():
     deterministic_tournament_selection = eval(config_params['deterministic_tournament_selection']['tournament_size'])
     metodo_cruza = eval(config_params['metodo_cruza']['crossover'])
     metodo_reemplazo = eval(config_params['metodo_reemplazo']['metodo1'])
-    mutation_rate = eval(config_params['metodo_mutacion']['mutation_rate'])
-    
+    mutation_type = eval(config_params['MUTATION']['mutation_type'])
+    cutCriteria = eval(config_params['CUT_CRITERIA']['criteria_type'])
     
     #equipment_data = random_stats(N, maxStatsValue)
     initialPopulation = generate_init_population(populationNumber, maxStatsValue, characterType)
@@ -43,31 +42,31 @@ def main():
     
     # Escribe la poblacion inicial.
     poblacion_rel_acu.insert(0, 'generation', int(1))
-    poblacion_rel_acu.to_csv('datos.csv', mode='w', index=False)
+    poblacion_rel_acu.to_csv(f'datos{metodo_cruza}.csv', mode='w', index=False)
     
     N1, N2 = method_selector(k, method1Percentage)
     
-    
     i = 1
     while i < numberOfGenerations:
-        newGenerationPopulation = selection_method(poblacion_rel_acu, N1, N2, characterType, i, selectionMethod1, selectionMethod2)
+        newGenerationPopulation = selection_method(poblacion_rel_acu, N1, N2, characterType, i, selectionMethod1, selectionMethod2, metodo_cruza)
         nuevaPoblacion = replacePopulation(initialPopulation, newGenerationPopulation)
         initialPopulation = nuevaPoblacion
         
         nuevaPoblacion = nuevaPoblacion.sort_values(by='performance', ascending=False)
         poblacion_rel_acu = add_relative_accumulate(nuevaPoblacion)
-        write_csv(poblacion_rel_acu, i+1)
+        write_csv(poblacion_rel_acu, i+1, metodo_cruza)
         
         i+=1
     
 def replacePopulation(initialPopulation, newGenerationPopulation):
-    #reemplazo de forma aleatoria
 
     #print(initialPopulation)
     #print(newGenerationPopulation)
     nuevas_filas = pd.DataFrame(newGenerationPopulation)
     initialPopulation = pd.concat([initialPopulation, nuevas_filas], ignore_index = True)
     filas_a_eliminar = initialPopulation.sample(newGenerationPopulation.shape[0]).index
+    
+    #Reemplazo de forma aleatoria
     initialPopulation = initialPopulation.drop(filas_a_eliminar)
     
     #print(initialPopulation)
@@ -80,8 +79,15 @@ def method_selector(K, method1Percentage):
     N2 = K - N1
     return N1, N2
 
-def selection_method(poblacion_rel_acu, N1, N2, characterType,i, selectionMethod1, selectionMethod2):
-    print(f' PROCESO{i}')
+def selection_method(poblacion_rel_acu, N1, N2, characterType,i, selectionMethod1, selectionMethod2, metodo_cruza):
+    config_params = read_config('config_file.config')
+    mutation_rate = eval(config_params['MUTATION']['mutation_rate'])
+    # Boltzmann parameters
+    boltzmannT_0 = eval(config_params['BOLTZMANN']['t_0'])
+    boltzmannT_offset = eval(config_params['BOLTZMANN']['t_offset'])
+    boltzmannDeltaT = eval(config_params['BOLTZMANN']['delta_t'])
+    
+    print(f' Generacion{i}')
     
     if(selectionMethod1 == 'elitist'):
         newPopulationMethod1 = elitist_selection(poblacion_rel_acu, N1)
@@ -102,10 +108,7 @@ def selection_method(poblacion_rel_acu, N1, N2, characterType,i, selectionMethod
     elif(selectionMethod2 == 'universal_selection'):
         newPopulationMethod2 = universal_selection(poblacion_rel_acu, N2)
         #print(newPopulationRoulette)
-    
-    #newPopulationUniversal = universal_selection(poblacion_rel_acu, N2)
-    #print(newPopulationUniversal) 
-    
+       
     """¡  # Ejemplo de uso:
     mutation_rate = 0.8
     resultmp = multi_gene_mutation(cromosomas_ok1, mutation_rate)
@@ -116,22 +119,18 @@ def selection_method(poblacion_rel_acu, N1, N2, characterType,i, selectionMethod
     resultmu = multi_gene_mutation_uniform(cromosomas_ok1, mutation_rate)
     print(resultmu)
     
-    
-    
     # Example usage:
     max_generation = 18
     generation = 1
     k = 4                                  # Number of desired selected individuals.
-    T_0 = 20                                 # Initial temperature.
-    T_offset = 0.5                          # Offset value for temperature exponential function.
+    boltzmannT_0 = 20                                 # Initial temperature.
+    boltzmannT_offset = 0.5                          # Offset value for temperature exponential function.
     reference_generation = max_generation   # Reference generation where 0 < (T_0 - T_offset) = 0.015 = deltaT is desired.
-    deltaT = 0.015                          # 0 < (T_0 - T_offset) = deltaT at reference generation.
-    m = - (np.log(deltaT) - np.log(T_0 - T_offset)) / reference_generation
+    boltzmannDeltaT = 0.015                          # 0 < (T_0 - T_offset) = deltaT at reference generation.
+    m = - (np.log(boltzmannDeltaT) - np.log(boltzmannT_0 - boltzmannT_offset)) / reference_generation
 
-    new_boltzmann_selection = boltzmann_selection(initialPopulation,k,generation,T_0,T_offset,m)
+    new_boltzmann_selection = boltzmann_selection(initialPopulation,k,generation,T_0,boltzmannT_offset,m)
     print(new_boltzmann_selection)
-
-
 
     individualsT = deterministic_tournament_selection(initialPopulation, 4, 5)
     print(individualsT)
@@ -146,25 +145,14 @@ def selection_method(poblacion_rel_acu, N1, N2, characterType,i, selectionMethod
     chromosomes = encode_genes(totalSelection)
     #print(chromosomes)
     
-    newIndividuals = single_point_crossover(chromosomes)
-    cromosomas_ok1 = valid_chromosome(newIndividuals)
-    while (len(cromosomas_ok1)<1):
-        newIndividuals = single_point_crossover(chromosomes)
-        cromosomas_ok1 = valid_chromosome(newIndividuals)
-    print(newIndividuals)
-    #print(cromosomas_ok1)
-        
+    chromosomes_ok1, newIndividuals = crossover(chromosomes, metodo_cruza) 
+    # print(newIndividuals)
     #cromosomas_decoded = decode_genes(newIndividuals)
     #cromosomas_decoded
         
 
-    new_individuals2 = two_point_crossover(chromosomes)
-    cromosomas_ok2 = valid_chromosome(new_individuals2)
-
-    while (len(cromosomas_ok2)<1):
-        new_individuals2 = single_point_crossover(chromosomes)
-        cromosomas_ok2 = valid_chromosome(new_individuals2)
-    #new_individuals2
+    chromosomes_ok2, newIndividuals2 = crossover(chromosomes, 'two_point')
+    #print(new_individuals2)
     #print(cromosomas_ok2)
     
     #cromosomas_decoded2 = decode_genes(new_individuals2)
@@ -174,22 +162,22 @@ def selection_method(poblacion_rel_acu, N1, N2, characterType,i, selectionMethod
     #cromosomas_decoded2
     
     mutation_rate = 0.1
-    if( len(cromosomas_ok1) > len(cromosomas_ok2) ):
+    if( len(chromosomes_ok1) > len(chromosomes_ok2) ):
 
         print("single_point_crossover won")
-        result = one_gene_mutation(cromosomas_ok1, mutation_rate)
+        result = one_gene_mutation(chromosomes_ok1, mutation_rate)
         cromosomas_okm = valid_chromosome(result)
 
         while (len(cromosomas_okm)<1):
-            result = one_gene_mutation(cromosomas_ok1, mutation_rate)
+            result = one_gene_mutation(chromosomes_ok1, mutation_rate)
             cromosomas_okm = valid_chromosome(result)
     else:     
         print("two_point_crossover won")   
-        result = one_gene_mutation(cromosomas_ok2, mutation_rate)
+        result = one_gene_mutation(chromosomes_ok2, mutation_rate)
         cromosomas_okm = valid_chromosome(result)
 
         while (len(cromosomas_okm)<1):
-            result = one_gene_mutation(cromosomas_ok2, mutation_rate)
+            result = one_gene_mutation(chromosomes_ok2, mutation_rate)
             cromosomas_okm = valid_chromosome(result)
 
     # print(cromosomas_okm)
@@ -201,10 +189,35 @@ def selection_method(poblacion_rel_acu, N1, N2, characterType,i, selectionMethod
     print(new_generation)
     
     return new_generation
-    
-def write_csv(dataFrame, generation):
+
+def crossover(chromosomes, metodo_cruza):
+    if(metodo_cruza == 'one_point'):
+        newIndividuals = single_point_crossover(chromosomes)
+    elif(metodo_cruza == 'two_point'):
+        newIndividuals = two_point_crossover(chromosomes)
+    elif(metodo_cruza == 'uniform'):
+        newIndividuals = uniform_crossover(chromosomes)
+    elif(metodo_cruza == 'annular'):
+        newIndividuals = annular_crossover(chromosomes)
+        
+    chromosomes_ok = valid_chromosome(newIndividuals)
+    while (len(chromosomes_ok)<1):
+        if(metodo_cruza == 'one_point'):
+            newIndividuals = single_point_crossover(chromosomes)
+        elif(metodo_cruza == 'two_point'):
+            newIndividuals = two_point_crossover(chromosomes)
+        elif(metodo_cruza == 'uniform'):
+            newIndividuals = uniform_crossover(chromosomes)
+        elif(metodo_cruza == 'annular'):
+            newIndividuals = annular_crossover(chromosomes)
+        chromosomes_ok = valid_chromosome(newIndividuals)
+    print(newIndividuals)
+    #print(chromosomes_ok)
+    return chromosomes_ok, newIndividuals
+
+def write_csv(dataFrame, generation, metodo_cruza):
     dataFrame.insert(0, 'generation', int(generation))
-    dataFrame.to_csv('datos.csv', mode='a', index=False, header = 'False')
+    dataFrame.to_csv(f'datos{metodo_cruza}.csv', mode='a', index=False, header = 'False')
 
 def read_config(filename):
     config = configparser.ConfigParser()
