@@ -32,7 +32,7 @@ def multi_gene_mutation(individuals, mutation_rate):
     else:
         chromosomes = individuals.copy()
         chromosomes = chromosomes.reset_index(drop=True)
-        print(chromosomes)
+        #print(chromosomes)
         for i in range(len(chromosomes)):
             #print(i)
             for col in chromosomes.columns:

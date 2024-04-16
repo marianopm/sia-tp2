@@ -180,9 +180,10 @@ def deterministic_tournament_selection(population, tournament_size, k):
         # Para casos incorrectos cuando se selecciona un número negativo para la selección de k-individuos:
         raise ValueError('El valor de k debe ser mayor que el seleccionado...')
     else:
-        individuals = pd.DataFrame(columns=population.columns)
-        individuals['performance'] = pd.Series(dtype=float)
-        
+        #individuals = pd.DataFrame(columns=population.columns)
+        #individuals['performance'] = pd.Series(dtype=float)
+        individuals = []
+        j=0
         for _ in range(k):
             # Selección aleatoria de [tournamentSize]-participantes:
             participants_index = np.random.randint(0, len(population), size=tournament_size)
@@ -190,14 +191,15 @@ def deterministic_tournament_selection(population, tournament_size, k):
             participants = population.iloc[participants_index]
             # Orden descendente de los participantes:
             winner_index = participants['performance'].idxmax()
-            winner = participants.loc[[winner_index]]
+            winner = participants.iloc[winner_index]
             # Verificar si winner no está vacío antes de concatenar
-            if not winner.empty:
-                individuals = pd.concat([individuals, winner])
+            individuals.append(winner)
+            j += 1
+        print(f'tamanio de deterministic_tournament: {j}')
+        #individuals = individuals.reset_index(drop=True)
+        print(f'tamanio de deterministic_tournament = {len(individuals)}')
 
-        individuals = individuals.reset_index(drop=True)
-
-    return individuals
+    return pd.DataFrame(individuals)
 
 def stochastic_tournament_selection(population, k,threshold):
     #El valor de threshold tiene que ser: random.uniform(0.5, 1)
