@@ -195,9 +195,9 @@ def deterministic_tournament_selection(population, tournament_size, k):
             # Verificar si winner no está vacío antes de concatenar
             individuals.append(winner)
             j += 1
-        print(f'tamanio de deterministic_tournament: {j}')
+        #print(f'tamanio de deterministic_tournament: {j}')
         #individuals = individuals.reset_index(drop=True)
-        print(f'tamanio de deterministic_tournament = {len(individuals)}')
+        #print(f'tamanio de deterministic_tournament = {len(individuals)}')
 
     return pd.DataFrame(individuals)
 
