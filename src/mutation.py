@@ -56,7 +56,7 @@ def multi_gene_mutation_uniform(individuals, mutation_rate):
     else:
         chromosomes = individuals.copy()
         chromosomes = chromosomes.reset_index(drop=True)
-        print(chromosomes)
+        #print(chromosomes)
         for i in range(len(chromosomes)):
             for col in chromosomes.columns:
                 # Genera un número aleatorio entre 0 y 1 para cada gen

@@ -10,7 +10,7 @@ def add_relative_accumulate(initialPopulation):
     
     # Calcular el performance relativo
     sum_performance = population2['performance'].sum()
-    print(f'sum: {sum_performance}')
+    #print(f'sum: {sum_performance}')
     population2['performance_relative'] = population2['performance'] / sum_performance 
     
     # Calcular la frecuencia relativa acumulada
@@ -127,7 +127,7 @@ def boltzmann_selection(population, k, generation, T_0, T_c, m):
         
         poblacion_rel_acu = add_relative_accumulate(popu)
         
-        print(poblacion_rel_acu)
+        #print(poblacion_rel_acu)
 
         selected = roulette_wheel_selection(poblacion_rel_acu, k)
     return selected
