@@ -1,8 +1,7 @@
 import numpy as np
 import pandas as pd
-
-from character import Character 
 from stats import random_stats
+from character import Character
 
 def generate_init_population(populationNumber, maxStatsValue,characterType):
     
@@ -21,6 +20,7 @@ def generate_init_population(populationNumber, maxStatsValue,characterType):
     for index, row in equipment_data.iterrows():
         personaje = Character(row['characterType'],row['height'],row['strength'],row['agility'],row['expertise'],row['resistance'],row['life'])
         personajes.append(personaje)
+        #print(f'Personaje creado: {personaje.characterType}')
     equipment_data['performance'] = [personaje.performance for personaje in personajes]
 
     poblacion_0 = equipment_data.sort_values(by='performance', ascending=False)

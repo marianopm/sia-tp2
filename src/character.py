@@ -46,15 +46,19 @@ class Character():
     
     @property
     def performance(self):
-        # This function qualifies the performance of obj.
         attack = self.attack_aptitude
         defense = self.defense_aptitude
         # Performance (objective function):
-        if self.characterType == CharacterType.WARRIOR:
+        # Debugging information
+        #print(f'perfomance de: {self.characterType}')
+        #print(f'attack: {attack}, defense: {defense}')
+        #tip= self.characterType.value
+        #print(f'type es = warrior : {tip==CharacterType.WARRIOR.value}')
+        if self.characterType.value == CharacterType.WARRIOR.value:
             return  0.6 * attack + 0.4 * defense
-        elif self.characterType == CharacterType.ARCHER:
+        elif self.characterType.value == CharacterType.ARCHER.value:
             return  0.9 * attack + 0.1 * defense
-        elif self.characterType == CharacterType.DEFENDER:
+        elif self.characterType.value == CharacterType.DEFENDER.value:
             return  0.1 * attack + 0.9 * defense
-        elif self.characterType == CharacterType.INFILTRATOR:
+        elif self.characterType.value == CharacterType.INFILTRATOR.value:
             return  0.8 * attack + 0.3 * defense
