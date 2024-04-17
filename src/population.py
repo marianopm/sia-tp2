@@ -24,6 +24,7 @@ def generate_init_population(populationNumber, maxStatsValue,characterType):
     equipment_data['performance'] = [personaje.performance for personaje in personajes]
 
     poblacion_0 = equipment_data.sort_values(by='performance', ascending=False)
+    poblacion_0.reset_index(drop=True, inplace=True)
     #print(poblacion_0)
     return poblacion_0
 

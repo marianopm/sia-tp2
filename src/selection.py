@@ -2,6 +2,7 @@ import math
 import random
 import pandas as pd
 import numpy as np
+from population import eval_performace
 
 #funcion auxiliar
 def add_relative_accumulate(initialPopulation):
@@ -60,7 +61,7 @@ def roulette_wheel_selection(population, k):
     distributed) is used as a roulette wheel spin and the cumulative sum of relative
     performance that exceeds this random number is selected.
     """
-
+    population = add_relative_accumulate(population)
     if k <= 0:
         # For wrong cases when a negative number is selected for k individuals selection:
         raise ValueError('k value must be greater than zero...')
@@ -92,6 +93,9 @@ def roulette_wheel_selection(population, k):
         
         # Create DataFrame from selected individuals
         selected_df = pd.DataFrame(individuals)
+        selected_df.drop(columns=['performance_relative'], inplace=True)
+        selected_df.drop(columns=['performance_accumulated'], inplace=True)
+        selected_df.reset_index(drop=True, inplace=True)
 
         return selected_df
     
@@ -125,11 +129,15 @@ def boltzmann_selection(population, k, generation, T_0, T_c, m):
         # Culculate ExpVal and save in 'perfomance' 
         popu['performance'] = np.exp(popu['performance'] / T) / ( (np.sum(np.exp(popu['performance'] / T))) /len(popu))
         
-        poblacion_rel_acu = add_relative_accumulate(popu)
-        
+        #poblacion_rel_acu = add_relative_accumulate(popu)
         #print(poblacion_rel_acu)
 
-        selected = roulette_wheel_selection(poblacion_rel_acu, k)
+        selected = roulette_wheel_selection(popu, k)
+        selected.drop(columns=['characterType'], inplace=True)
+        selected.drop(columns=['performance'], inplace=True)
+        selected = eval_performace(selected,popu['characterType'])
+        selected.reset_index(drop=True, inplace=True)
+
     return selected
 
 def universal_selection(population, k):
@@ -140,7 +148,7 @@ def universal_selection(population, k):
     This function makes a selection of [k]-individuals by applying the universal
     method through an iterative code that selects multiple individuals at once.
     """
-
+    population = add_relative_accumulate(population)
     if k <= 0:
         # For wrong cases when a negative number is selected for k-individuals selection:
         raise ValueError('k value must be greater than zero...')
@@ -171,6 +179,9 @@ def universal_selection(population, k):
 
         # Create DataFrame from selected individuals
         individuals_df = pd.DataFrame(individuals)
+        individuals_df.drop(columns=['performance_relative'], inplace=True)
+        individuals_df.drop(columns=['performance_accumulated'], inplace=True)
+        individuals_df.reset_index(drop=True, inplace=True)
 
         return individuals_df
 
@@ -198,10 +209,12 @@ def deterministic_tournament_selection(population, tournament_size, k):
         #print(f'tamanio de deterministic_tournament: {j}')
         #individuals = individuals.reset_index(drop=True)
         #print(f'tamanio de deterministic_tournament = {len(individuals)}')
+        individuals_df = pd.DataFrame(individuals)
+        individuals_df.reset_index(drop=True, inplace=True)
 
-    return pd.DataFrame(individuals)
+    return individuals_df
 
-def stochastic_tournament_selection(population, k,threshold):
+def stochastic_tournament_selection(population, k, threshold):
     #El valor de threshold tiene que ser: random.uniform(0.5, 1)
     if k <= 0:
         # Para casos incorrectos cuando se selecciona un número negativo para k-individuos selection:
@@ -235,7 +248,10 @@ def stochastic_tournament_selection(population, k,threshold):
 
             individuals.append(winner)
 
-    return pd.DataFrame(individuals)
+        individuals_df = pd.DataFrame(individuals)
+        individuals_df.reset_index(drop=True, inplace=True)
+
+    return individuals_df
 
 
 
@@ -261,9 +277,10 @@ def rank_based_selection(population, k):
         sorted_population.drop(columns=['ranking'], inplace=True)
 
         # Use roulette-wheel selection method:
-        sorted_population_rel_acu = add_relative_accumulate(sorted_population)
+        #sorted_population_rel_acu = add_relative_accumulate(sorted_population)
         
         #print(sorted_population_rel_acu)
-        individuals = roulette_wheel_selection(sorted_population_rel_acu, k)
+        individuals = roulette_wheel_selection(sorted_population, k)
+        individuals.reset_index(drop=True, inplace=True)
         
         return individuals

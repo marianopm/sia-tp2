@@ -6,6 +6,7 @@ import configparser
 from collections import defaultdict
 from src.character import Character, CharacterType 
 from src.stats import random_stats
+from src.selection import stochastic_tournament_selection, deterministic_tournament_selection, add_relative_accumulate, elitist_selection, roulette_wheel_selection, universal_selection, boltzmann_selection, rank_based_selection
 from src.genes import  encode_genes, decode_genes
 from src.mutation import one_gene_mutation, multi_gene_mutation, multi_gene_mutation_uniform
 
@@ -13,7 +14,6 @@ import sys
 sys.path.append("src")
 
 from src.population import generate_init_population, eval_performace
-from src.selection import stochastic_tournament_selection, deterministic_tournament_selection, add_relative_accumulate, elitist_selection, roulette_wheel_selection, universal_selection, boltzmann_selection, rank_based_selection
 from src.crossover import single_point_crossover, two_point_crossover, uniform_crossover, annular_crossover, normalize_chromosome
 
 def read_config(filename):
@@ -73,7 +73,7 @@ def parameters():
     threhold = eval(config_params['stochastic_tournament_selection']['threshold'])
     # Boltzmann parameters
     boltzmannT_0 = eval(config_params['BOLTZMANN']['t_0'])
-    boltzmannT_c = eval(config_params['BOLTZMANN']['t_c'])
+    boltzmannT_c = eval(config_params['BOLTZMANN']['t_offset'])
     boltzmannM = eval(config_params['BOLTZMANN']['m'])
 
     Param = namedtuple('Param',[
@@ -131,25 +131,28 @@ def method_selector(Kt, method1Percentage):
     return K1, K2
 
 def selection_method(poblacion, ki, params, method, generation):
+    
+    #print(f' Generacion: {generation}')
+    poblacion_rel_acu = add_relative_accumulate(poblacion)
 
     if(method == 'elitist'):
-        selected = elitist_selection(poblacion, ki)
+        selected = elitist_selection(poblacion_rel_acu, ki)
     elif(method == 'roulette_wheel'):
-        selected = roulette_wheel_selection(poblacion, ki)
+        selected = roulette_wheel_selection(poblacion_rel_acu, ki)
     elif(method == 'boltzmann'):
-        selected = boltzmann_selection(poblacion, ki, generation, params.boltzmannT_0,params.boltzmannT_c,params.boltzmannM)
+        selected = boltzmann_selection(poblacion_rel_acu, ki, generation, params.boltzmannT_0,params.boltzmannT_c,params.boltzmannM)
         #print(newPopulationRoulette)
     elif(method == 'universal_selection'):
-        selected = universal_selection(poblacion, ki)
+        selected = universal_selection(poblacion_rel_acu, ki)
         #print(newPopulationRoulette)
     elif(method == 'deterministic_tournament'):
-        selected = deterministic_tournament_selection(poblacion, params.tournament_size, ki)
+        selected = deterministic_tournament_selection(poblacion_rel_acu, params.tournament_size, ki)
         #print(newPopulationRoulette)
     elif(method == 'stochastic_tournament'):
-        selected = stochastic_tournament_selection(poblacion, ki, params.threhold)
+        selected = stochastic_tournament_selection(poblacion_rel_acu, ki, params.threhold)
         #print(newPopulationRoulette)
     elif(method == 'rank_based'):
-        selected = rank_based_selection(poblacion, ki)
+        selected = rank_based_selection(poblacion_rel_acu, ki)
         #print(newPopulationRoulette)
     return selected
 
@@ -177,9 +180,9 @@ def mutation_method(poblacion, rate, method):
     
     return mutated
 
-def main():
+def main(config,output):
     # Lectura de parametros
-    params = read_config('config_file.config')
+    params = read_config(config)
     p = parameters()
     print(f'N = {p.populationNumber}')
     print(f'K = {p.k}')
@@ -194,7 +197,7 @@ def main():
     # Escribe la poblacion inicial.
     generation_0['generation'] = generacion
     mas_apto_G0 = generation_0.head(1)
-    mas_apto_G0.to_csv(f'datos-Prueba1.csv', mode='w', index=False)
+    mas_apto_G0.to_csv(output, mode='w', index=False)
 
     #MOTOR AG START!
     while(generacion < max_generations):
@@ -269,7 +272,6 @@ def main():
 
         new_generation['generation'] = generacion
         mas_apto_NG = new_generation.head(1)
-        mas_apto_NG.to_csv(f'datos-Prueba1.csv', mode='a', header=False, index=False)
+        mas_apto_NG.to_csv(output, mode='a', header=False, index=False)
 
-if __name__ == "__main__":
-    main()
+
