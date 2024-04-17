@@ -138,19 +138,14 @@ def selection_method(poblacion, ki, params, method, generation):
         selected = roulette_wheel_selection(poblacion, ki)
     elif(method == 'boltzmann'):
         selected = boltzmann_selection(poblacion, ki, generation, params.boltzmannT_0,params.boltzmannT_c,params.boltzmannM)
-        #print(newPopulationRoulette)
     elif(method == 'universal_selection'):
         selected = universal_selection(poblacion, ki)
-        #print(newPopulationRoulette)
     elif(method == 'deterministic_tournament'):
         selected = deterministic_tournament_selection(poblacion, params.tournament_size, ki)
-        #print(newPopulationRoulette)
     elif(method == 'stochastic_tournament'):
         selected = stochastic_tournament_selection(poblacion, ki, params.threhold)
-        #print(newPopulationRoulette)
     elif(method == 'rank_based'):
         selected = rank_based_selection(poblacion, ki)
-        #print(newPopulationRoulette)
     return selected
 
 def crossover_method(poblacion, method):
