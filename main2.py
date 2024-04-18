@@ -203,8 +203,8 @@ def main():
         # SELECCION TOTAL: K padres
         selection_total = pd.concat([generacion_sel1, generacion_sel2])
 
-        selection_total.drop(columns=['performance_relative'], inplace=True)
-        selection_total.drop(columns=['performance_accumulated'], inplace=True)
+        #selection_total.drop(columns=['performance_relative'], inplace=True)
+        #selection_total.drop(columns=['performance_accumulated'], inplace=True)
         selection_total = selection_total.sort_values(by='performance', ascending=False)
         selection_total.reset_index(drop=True, inplace=True)
 
@@ -254,8 +254,8 @@ def main():
         # INDIVIDUOS TOTAL
         new_generation = pd.concat([generacion_reemp1, generacion_reemp2])
 
-        new_generation.drop(columns=['performance_relative'], inplace=True)
-        new_generation.drop(columns=['performance_accumulated'], inplace=True)
+        #new_generation.drop(columns=['performance_relative'], inplace=True)
+        #new_generation.drop(columns=['performance_accumulated'], inplace=True)
         new_generation = new_generation.sort_values(by='performance', ascending=False)
         new_generation.reset_index(drop=True, inplace=True)
 
