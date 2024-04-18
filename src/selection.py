@@ -123,11 +123,17 @@ def boltzmann_selection(population, k, generation, T_0, T_c, m):
         raise ValueError('k value must be greater than selected one...')
     else:
         # Temperature equation in function of the generation instant:
+        #print(f'k= {k}')
+        #print(f'dentro de Boltzmann, generacion = {generation}')
+        #print(f'T_0= {T_0}')
+        #print(f'T_c= {T_c}')
+        #print(f'm= {m}')
+
         T = T_c + (T_0 - T_c) * np.exp(-m * generation)
         # Pseudo-fitness function (along temperature):
         popu = population.loc[:, ['strength','agility','expertise','resistance','life','height','characterType','performance']]
         # Culculate ExpVal and save in 'perfomance' 
-        popu['performance'] = np.exp(popu['performance'] / T) / ( (np.sum(np.exp(popu['performance'] / T))) /len(popu))
+        popu['performance'] = np.exp(popu['performance'].astype(float) / T.astype(float)) / ( (np.sum(np.exp(popu['performance'].astype(float) / T.astype(float)))) /len(popu))
         
         #poblacion_rel_acu = add_relative_accumulate(popu)
         #print(poblacion_rel_acu)

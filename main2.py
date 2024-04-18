@@ -183,20 +183,22 @@ def main():
 
     # Generacion 0
     generation_0 = generate_init_population(p.populationNumber,p.maxStatsValue,p.character)
-    generacion = 0
+    generacion = 1
+
+    current_generation = generation_0
 
     # GUARDO EL MAS APTO DE LA GENERACION 0
     # Escribe la poblacion inicial.
     generation_0['generation'] = generacion
     mas_apto_G0 = generation_0.head(1)
     mas_apto_G0.to_csv(f'datos-Prueba1.csv', mode='w', index=False)
+    generation_0.drop(columns=['generation'], inplace=True)
 
     #MOTOR AG START!
     while(generacion < max_generations):
         # SELECCION DE PADRES
         k1, k2 = method_selector(p.k, p.method1Percentage)
-        current_generation = generation_0
-
+        
         generacion_sel1 = selection_method(current_generation, k1, p, p.selectionMethod1, generacion)
         generacion_sel2 = selection_method(current_generation, k2, p, p.selectionMethod2, generacion)
 
@@ -238,16 +240,18 @@ def main():
         # padres:  selection_total de tamaño K
         # hijos: offspring  de tamaño K
         # tomo K de los hijos
-        k_reemplazo_metodo3 = p.k
+        k_reemplazo_metodo3 = round(p.k * p.methodReplacePercentage)
+        
         # el resto para completar N
-        k_reemplazo_metodo4 = p.populationNumber - p.k
+        k_reemplazo_metodo4 = p.populationNumber - k_reemplazo_metodo3
 
-        #print(f'k_reemplazo_metodo3 (k) = {k_reemplazo_metodo3}')
-        #print(f'k_reemplazo_metodo4 (N - k)= {k_reemplazo_metodo4}')
+        #print(f'k_reemplazo_metodo3 R = (k * {p.methodReplacePercentage}) = {k_reemplazo_metodo3}')
+        #print(f'k_reemplazo_metodo4 (N - R)= {k_reemplazo_metodo4}')
 
         # REEMPLAZO DE INDIVIDUOS
         generacion_reemp1 = selection_method(offspring, k_reemplazo_metodo3, p, p.metodo_reemplazo3, generacion)
-        generacion_reemp2 = selection_method(selection_total, k_reemplazo_metodo4, p, p.metodo_reemplazo4, generacion)
+        generacion_reemp2 = selection_method(current_generation, k_reemplazo_metodo4, p, p.metodo_reemplazo4, generacion)
+        
         #print(f'k_reemplazo_metodo3 (k) = {len(generacion_reemp1)}')
         #print(f'k_reemplazo_metodo4 (N - k)= {len(generacion_reemp2)}')
 
@@ -260,11 +264,14 @@ def main():
         new_generation.reset_index(drop=True, inplace=True)
 
         generacion += 1
-        # GUARDO EL MAS APTO DE LA GENERACION NUEVA
 
+        current_generation = new_generation
+
+        # GUARDO EL MAS APTO DE LA GENERACION NUEVA
         new_generation['generation'] = generacion
         mas_apto_NG = new_generation.head(1)
         mas_apto_NG.to_csv(f'datos-Prueba1.csv', mode='a', header=False, index=False)
+        new_generation.drop(columns=['generation'], inplace=True)
 
 if __name__ == "__main__":
     main()
