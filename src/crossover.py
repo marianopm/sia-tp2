@@ -71,13 +71,7 @@ def single_point_crossover(individuals):
                 offspring_2[col] = chromosomes.iloc[i+1][col][:point] + chromosomes.iloc[i][col][point:]
 
             new_chromosomes.extend([offspring_1, offspring_2])
-        """
-        # Mantener las columnas no afectadas
-        unchanged_columns = [col for col in chromosomes.columns if col not in columns_to_crossover]
-        for col in unchanged_columns:
-            new_chromosomes[0][col] = chromosomes.iloc[0][col]
-            new_chromosomes[1][col] = chromosomes.iloc[1][col]
-        """
+
         # Concatenar los nuevos cromosomas y reiniciar los índices
         chromosomes = pd.DataFrame(new_chromosomes)
         chromosomes.reset_index(drop=True, inplace=True)
@@ -106,19 +100,14 @@ def two_point_crossover(individuals):
                 offspring_2[col] = chromosomes.iloc[i+1][col][:points[0]] + chromosomes.iloc[i][col][points[0]:points[1]] + chromosomes.iloc[i+1][col][points[1]:]
 
             new_chromosomes.extend([offspring_1, offspring_2])
-        """
-        # Mantener las columnas no afectadas
-        unchanged_columns = [col for col in chromosomes.columns if col not in columns_to_crossover]
-        for col in unchanged_columns:
-            new_chromosomes[0][col] = chromosomes.iloc[0][col]
-            new_chromosomes[1][col] = chromosomes.iloc[1][col]
-        """
+
         # Concatenar los nuevos cromosomas y reiniciar los índices
         chromosomes = pd.DataFrame(new_chromosomes)
         chromosomes.reset_index(drop=True, inplace=True)
 
         return chromosomes
-    
+
+"""    
 def uniform_crossover(individuals):
     # Verificar que el número de individuos seleccionados sea par
     if len(individuals) % 2 != 0:
@@ -153,7 +142,24 @@ def uniform_crossover(individuals):
         offspring.reset_index(drop=True, inplace=True)
 
     return offspring
+"""
 
+def uniform_crossover(individuals):
+    num_individuals, num_genes = individuals.shape
+
+    for i in range(0, num_individuals, 2):
+        for col in range(num_genes):
+            crossover_probability = np.random.uniform(0, 1)
+
+            if crossover_probability < 0.5:
+                individual1 = individuals.iloc[i, col]
+                individual2 = individuals.iloc[i + 1, col]
+                new_individual1 = ''.join([bit2 if prob < 0.5 else bit1 for bit1, bit2, prob in zip(individual1, individual2, np.random.rand(len(individual1)))])
+                new_individual2 = ''.join([bit1 if prob < 0.5 else bit2 for bit1, bit2, prob in zip(individual1, individual2, np.random.rand(len(individual1)))])
+                individuals.iloc[i, col] = new_individual1
+                individuals.iloc[i + 1, col] = new_individual2
+
+    return individuals
 
 def annular_crossover(individuals):
     if len(individuals) % 2 != 0:
