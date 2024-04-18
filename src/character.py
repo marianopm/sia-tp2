@@ -23,7 +23,7 @@ class Character():
         self.height = height                                # Specify Character's height.
         self.strength = 100 * math.tanh(strength_i/100)     # Specify Character's strength.
         self.agility = math.tanh(agility_i/100)             # Specify Character's agility.
-        self.expertise = 6 * math.tanh(expertise_i/100)     # Specify Character's expertise.
+        self.expertise = 0.6 * math.tanh(expertise_i/100)     # Specify Character's expertise.
         self.resistance = math.tanh(resistance_i/100)       # Specify Character's resistance.
         self.life = 100 * math.tanh(life_i/100)             # Specify Character's life.
 
@@ -32,7 +32,7 @@ class Character():
     def attack_aptitude(self):
         # This function establish attack hability for the character.
         # Attack modifier:
-        atm = 5 - (3 * self.height - 5)**4 + (3 * self.height - 5)**2 + self.height/2
+        atm = 0.5 - (3 * self.height - 5)**4 + (3 * self.height - 5)**2 + self.height/2
         # Attack aptitude:
         return (self.agility + self.expertise) * self.strength * atm
     
