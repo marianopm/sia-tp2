@@ -210,6 +210,8 @@ def main():
         selection_total = selection_total.sort_values(by='performance', ascending=False)
         selection_total.reset_index(drop=True, inplace=True)
 
+        selection_total.to_csv(f'selection_total.csv', mode='w', index=False)
+
         # CROSSOVER
         cromosomas = encode_genes(selection_total)
         crossed_result = crossover_method(cromosomas, p.metodo_cruza)
