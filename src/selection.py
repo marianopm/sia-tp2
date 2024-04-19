@@ -287,6 +287,8 @@ def rank_based_selection(population, k):
         
         #print(sorted_population_rel_acu)
         individuals = roulette_wheel_selection(sorted_population, k)
+        individuals.drop(columns=['performance'], inplace=True)
+        individuals = eval_performace(individuals,sorted_population['characterType'])
         individuals.reset_index(drop=True, inplace=True)
         
         return individuals
