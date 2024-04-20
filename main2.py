@@ -29,9 +29,9 @@ def read_config(filename):
 
 from collections import namedtuple
 
-def parameters():
+def parameters(filename):
     
-    config_params = read_config('config_file.config')
+    config_params = read_config(filename)
 
     # Personaje 
     type = eval(config_params['CHARACTER']['type'])
@@ -174,8 +174,8 @@ def mutation_method(poblacion, rate, method):
 
 def main():
     # Lectura de parametros
-    params = read_config('config_file.config')
-    p = parameters()
+    #params = read_config('config_file.config')
+    p = parameters('config_file.config')
     print(f'N = {p.populationNumber}')
     print(f'K = {p.k}')
     max_generations = p.numberOfGenerations
@@ -277,8 +277,10 @@ def main():
 
 def mainP(config,output):
     # Lectura de parametros
-    params = read_config(config)
-    p = parameters()
+    #params = read_config(config)
+    #print(params)
+    p = parameters(config)
+    print(p)
     print(f'N = {p.populationNumber}')
     print(f'K = {p.k}')
     max_generations = p.numberOfGenerations
