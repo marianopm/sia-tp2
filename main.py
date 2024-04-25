@@ -153,7 +153,7 @@ def crossover_method(poblacion, method):
         crossed = two_point_crossover(poblacion)
     elif(method == 'uniform'):
         crossed = uniform_crossover(poblacion)
-    elif(method == 'anunlar'):
+    elif(method == 'annular'):
         crossed = annular_crossover(poblacion)
     
     return crossed
