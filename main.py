@@ -153,7 +153,7 @@ def crossover_method(poblacion, method):
         crossed = two_point_crossover(poblacion)
     elif(method == 'uniform'):
         crossed = uniform_crossover(poblacion)
-    elif(method == 'anular'):
+    elif(method == 'anunlar'):
         crossed = annular_crossover(poblacion)
     
     return crossed
@@ -274,7 +274,7 @@ def main():
             cuttoff = cutoff_new_generation(generacion, p.populationNumber, p.numberOfGenerations, 70, p.selectionMethod1, p.selectionMethod2, i)
 
             # GUARDO TODOS LOS INDIVIDUOS
-            new_generation.to_csv(f'motorAGP_AllGenerations_{p.selectionMethod1}-{p.selectionMethod2}{i}.csv', mode='a', header=False, index=False)
+            new_generation.to_csv(f'motorAGPArcher_AllGenerations_{p.selectionMethod1}-{p.selectionMethod2}{i}.csv', mode='a', header=False, index=False)
         i +=1
 
 def cutoff_new_generation(generations, populationNumber, numberOfGenerations, cutoff_percentage, selectionMethod1, selectionMethod2, i):
