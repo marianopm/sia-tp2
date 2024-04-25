@@ -170,7 +170,7 @@ def mutation_method(poblacion, rate, method):
 
 def main():
     #config = 'config_fileNUEVO.config'
-    config = 'config_file_Arqcher2b.config'
+    config = 'config_file.config'
     output = 'motorAG1c.csv'
     
     # Lectura de parametros
